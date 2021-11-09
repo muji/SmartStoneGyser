@@ -1,0 +1,113 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>ESP Web Server</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+            <body>
+                        <div class="card">
+
+                            
+                        <div class="content">
+                        
+                        <label class="toggle">
+                                <span class="onoff">OFF</span>
+                                <input type="checkbox" />
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                            
+
+                            
+                            <div class="card">
+                            <p><button id="button1" class="button">High</button></p>
+                            <p><button id="button2" class="button">Meduim</button></p>
+                            <p><button id="button3" class="button">Low</button></p>
+                            <h1 style="background-color:rgb(255, 99, 71);">Temprature Now</h1>
+                            <h1 style="background-color:rgb(255, 99, 255);">55</h1>
+                            </div>
+                                <script>
+                                var gateway = `ws://${window.location.hostname}/ws`;
+                                var websocket;
+                                const toggle = document.querySelector('.toggle input')
+
+                                toggle.addEventListener('click', () => {
+                                    const onOff = toggle.parentNode.querySelector('.onoff')
+                                    var state_ = toggle.checked ? 'ON' : 'OFF'
+                                    onOff.textContent = state_
+                                    doSend(state_);
+                                   
+                                })
+
+                                function initWebSocket() {
+                                                        console.log('Trying to open a WebSocket connection...');
+                                                        websocket = new WebSocket(gateway);
+                                                        websocket.onopen    = onOpen;
+                                                        websocket.onclose   = onClose;
+                                                        websocket.onmessage = onMessage; // <-- add this line
+                                                    }
+                                function onOpen(event) {
+                                    console.log('Connection opened');
+                                }
+
+                                function onClose(event) {
+                                    console.log('Connection closed');
+                                    setTimeout(initWebSocket, 2000);
+                                }
+
+
+                               // Called when a message is received from the server
+                                function onMessage(evt) {
+
+                                // Print out our received message
+                                console.log("Received: " + evt.data);
+
+                                // Update circle graphic with LED state
+                                switch(evt.data) {
+                                    case "ON":
+                                         
+                                        
+                                         onOff.textContent = ON
+                                        
+                                        break;
+                                    case "OFF":
+                                       
+                                        
+                                        onOff.textContent = OFF
+
+                                        default :
+                                        //alert(evt.data);  
+
+                                        break;
+                                }
+                                }
+
+                                window.addEventListener('load', onLoad);
+                                function onLoad(event) {
+                                    initWebSocket();
+                                    initButton();
+                                }
+
+                                                                // Sends a message to the server (and prints it to the console)
+                                function doSend(message) {
+                                    console.log("Sending: " + message);
+                                    websocket.send(message);
+                                }
+
+                                // Called whenever the HTML button is pressed
+                                function onPress() {
+                                    //doSend("toggleLED");
+                                   // doSend("getLEDState");
+                                }
+
+                                function initButton() {
+                                    //document.getElementById('button').addEventListener('click', toggle);
+                                }
+                                
+
+                                
+                                </script>
+            </body>
+</html>
